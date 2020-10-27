@@ -1,0 +1,35 @@
+{
+  "name": "recruitment-task-v3",
+  "version": "1.0.0",
+  "description": "Hey there!",
+  "main": "build/index.js",
+  "scripts": {
+    "compile": "tsc",
+    "compile-dev": "tsc --watch",
+    "start": "node .",
+    "start-dev": "nodemon .",
+    "test": "mocha"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/stachszymon/recruitment-task-v3.git"
+  },
+  "author": "Szymon Stach",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/stachszymon/recruitment-task-v3/issues"
+  },
+  "homepage": "https://github.com/stachszymon/recruitment-task-v3#readme",
+  "dependencies": {
+    "express": "^4.17.1"
+  },
+  "devDependencies": {
+    "@types/express": "^4.17.8",
+    "@types/node": "^14.14.5",
+    "chai": "^4.2.0",
+    "chai-http": "^4.3.0",
+    "mocha": "^8.2.0",
+    "nodemon": "^2.0.6",
+    "typescript": "^4.0.5"
+  }
+}
