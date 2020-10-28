@@ -1,6 +1,6 @@
-import IModel from "../interfaces/IModel"
+import db from "./db";
 
-export default class Model implements IModel {
+export default class Model {
 
     private schema: Schema | Schemas;
     private dbName: string;
@@ -10,24 +10,23 @@ export default class Model implements IModel {
         this.schema = schema;
     }
 
-    find() {
+    static find() {
 
     }
 
-    delete() {
+    static delete() {
 
     }
 
-    update() {
+    static update() {
 
     }
 
-    save() {
+    static save() {
 
     }
 
 }
-
 
 export type Schema = {
     type: Types

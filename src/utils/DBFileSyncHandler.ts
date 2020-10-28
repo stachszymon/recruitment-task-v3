@@ -1,7 +1,7 @@
-import IDatabaseInterface from "../interfaces/IDatabaseFileReader";
 import fs from "fs/promises"
+import { IDatabaseHandler, IDatabaseHandlerContructor } from "../interfaces/IDatabaseHandler";
 
-export default class DBReaderSync implements IDatabaseInterface {
+const DBFileSyncHandler: IDatabaseHandlerContructor = class DBFileSyncHandler implements IDatabaseHandler {
 
     private path: string;
     private data: Array<object> | object;
@@ -32,4 +32,18 @@ export default class DBReaderSync implements IDatabaseInterface {
         });
     }
 
+    append(): Promise<boolean> {
+        return new Promise(resolve => {
+            resolve(true)
+        });
+    }
+
+    delete(): Promise<boolean> {
+        return new Promise(resolve => {
+            resolve(true)
+        });
+    }
+
 }
+
+export default DBFileSyncHandler;
