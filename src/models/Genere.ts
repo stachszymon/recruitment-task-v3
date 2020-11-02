@@ -1,10 +1,10 @@
-import Model, { Schema, Types } from "../utils/Model";
+import Model, { Schema, Types, createModel } from "../utils/Model";
 
 const schema: Schema = {
     type: Types.String,
     required: true
 }
 
-const Genere = new Model('genres', schema)
+const Genere = createModel('genres', schema)
 
 export default Genere;

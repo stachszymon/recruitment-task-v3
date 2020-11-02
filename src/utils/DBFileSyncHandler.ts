@@ -1,3 +1,4 @@
+import { json } from "express";
 import fs from "fs/promises"
 import { IDatabaseHandler, IDatabaseHandlerContructor } from "../interfaces/IDatabaseHandler";
 
@@ -11,13 +12,11 @@ const DBFileSyncHandler: IDatabaseHandlerContructor = class DBFileSyncHandler im
         this.data = [];
     }
 
-    read(): Promise<Array<object>> {
-        return fs.readFile(this.path, {
-            encoding: "utf-8"
-        })
+    public read(): Promise<Array<object>> {
+        return fs.readFile(this.path, { encoding: "utf-8" })
             .then(value => {
-                console.log(value);
-                return [];
+                // console.log(value);
+                return JSON.parse(value);
             })
             .catch(err => {
                 console.error(err);
@@ -25,20 +24,19 @@ const DBFileSyncHandler: IDatabaseHandlerContructor = class DBFileSyncHandler im
             });
     }
 
-
-    write(): Promise<boolean> {
+    public append(): Promise<boolean> {
         return new Promise(resolve => {
             resolve(true)
         });
     }
 
-    append(): Promise<boolean> {
+    public delete(): Promise<boolean> {
         return new Promise(resolve => {
             resolve(true)
         });
     }
 
-    delete(): Promise<boolean> {
+    private write(): Promise<boolean> {
         return new Promise(resolve => {
             resolve(true)
         });

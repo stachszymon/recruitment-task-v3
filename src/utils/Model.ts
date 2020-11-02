@@ -1,5 +1,20 @@
 import db from "./db";
 
+export function createModel(databaseName: string, schema: Schema | Schemas): any {
+    return class extends Model {
+        private data: object;
+
+        constructor(data: object) {
+            super(databaseName, schema);
+            this.data = data;
+        }
+
+        save(): Promise<object> {
+            return Promise.resolve({})
+        }
+    }
+}
+
 export default class Model {
 
     private schema: Schema | Schemas;
@@ -10,20 +25,20 @@ export default class Model {
         this.schema = schema;
     }
 
-    static find() {
-
+    static find(): Promise<object | Array<object>> {
+        return Promise.resolve({});
     }
 
-    static delete() {
-
+    static delete(): Promise<undefined> {
+        return Promise.resolve(undefined);
     }
 
-    static update() {
-
+    static update(): Promise<undefined> {
+        return Promise.resolve(undefined)
     }
 
-    static save() {
-
+    static create(): Promise<object> {
+        return Promise.resolve({})
     }
 
 }

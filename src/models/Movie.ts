@@ -1,6 +1,6 @@
-import Model, { Schemas, Types } from "../utils/Model";
+import Model, { Schemas, Types, createModel } from "../utils/Model";
 
-const schema : Schemas = {
+const schema: Schemas = {
     title: {
         type: Types.String,
         required: true,
@@ -40,6 +40,6 @@ const schema : Schemas = {
 - posterUrl (optional, string)
  */
 
-const Movie = new Model('movies', schema);
+const Movie = createModel('movies', schema);
 
 export default Movie;

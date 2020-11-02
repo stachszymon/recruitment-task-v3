@@ -1,5 +1,4 @@
 import { Request, Response, NextFunction } from "express";
-import { get } from "http";
 import { Controller, Get } from "../utils/ControllerDecorators";
 
 @Controller("/movie")
