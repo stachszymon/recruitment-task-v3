@@ -2,16 +2,36 @@ import db from "./db";
 
 export function createModel(databaseName: string, schema: Schema | Schemas): any {
     return class extends Model {
-        private data: object;
+
+        private data: object = {};
 
         constructor(data: object) {
             super(databaseName, schema);
             this.data = data;
+
+            return new Proxy(this, {
+                get: (obj: any, key: string | number | symbol, receiver: any) => {
+                    return obj.data[key];
+                },
+                set: (obj: any, key: string | number | symbol, value: any, receiver: any) => {
+                    obj.data[key] = value;
+                    return true;
+                }
+            })
         }
 
         save(): Promise<object> {
             return Promise.resolve({})
         }
+
+        getData() {
+            return { ...this.data };
+        }
+
+        setData(data: object) {
+            this.data = { ...data };
+        }
+
     }
 }
 
@@ -37,7 +57,7 @@ export default class Model {
         return Promise.resolve(undefined)
     }
 
-    static create(): Promise<object> {
+    static create(data: object): Promise<object> {
         return Promise.resolve({})
     }
 
