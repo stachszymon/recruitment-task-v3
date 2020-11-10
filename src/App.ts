@@ -1,9 +1,5 @@
 import express, { Application } from "express";
 import { RouteDefinition } from "./utils/ControllerDecorators";
-import debug from "debug";
-debug.enable('*')
-
-const a = debug('app');
 
 export default class App {
     private express: Application;
@@ -33,11 +29,7 @@ export default class App {
                 prefix: string = Reflect.get(controller, "prefix"),
                 routes: Array<RouteDefinition> = Reflect.get(controller, "routes");
 
-            a(controller);
-
             const newRoutes = express.Router();
-
-            a(routes?.length)
 
             routes.forEach(route => {
                 const x = route.handler;

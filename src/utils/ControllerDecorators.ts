@@ -1,12 +1,3 @@
-import { Console } from "console";
-import debug from "debug";
-
-debug.enable('*')
-
-const c = debug("@CtrD"),
-    g = debug("@GetD");
-
-
 export type RouteDefinition = {
     path: string
     method: "get" | "post" | "delete" | "options" | "put"
@@ -26,7 +17,6 @@ export function Get(path: string): MethodDecorator {
         key: string | symbol,
         descriptor: PropertyDescriptor
     ): void {
-
         checkForRoutesArray(target);
 
         const routes: Array<RouteDefinition> = Reflect.get(target, "routes");
@@ -38,20 +28,12 @@ export function Get(path: string): MethodDecorator {
         })
 
         Reflect.set(target, "routes", routes);
-
-        g(target);
-
     }
 }
 
 export function Controller(path: string): ClassDecorator {
     return function (target: Function) {
         Reflect.set(target, "prefix", path)
-
-        c(target)
-        c(target.prototype)
-        c(Reflect.ownKeys(target))
-
         Reflect.set(target, "routes", target.prototype.routes)
 
         checkForRoutesArray(target);

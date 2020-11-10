@@ -1,4 +1,4 @@
-import Model, { Schema, Types, createModel } from "../utils/Model";
+import { Schema, Types, createModel } from "../utils/Model";
 
 const schema: Schema = {
     type: Types.String,

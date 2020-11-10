@@ -1,4 +1,4 @@
-import Model, { Schemas, Types, createModel } from "../utils/Model";
+import { Schemas, Types, createModel } from "../utils/Model";
 
 const schema: Schemas = {
     title: {
