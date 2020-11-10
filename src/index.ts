@@ -9,7 +9,3 @@ app.initializeControllers([MovieController]);
 app.run();
 
 module.exports = app.getExpress(); //Required for tests
-
-setTimeout(() => {
-    db.delete('movies', { id: 146 })
-}, 1000)

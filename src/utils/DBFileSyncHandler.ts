@@ -1,7 +1,6 @@
 import { dbPath } from './../config/config';
 import { IDatabaseHandler, IDatabaseHandlerContructor, DBStruct } from "../interfaces/IDatabaseHandler";
 import fs from "fs/promises"
-import { ENETDOWN } from 'constants';
 
 const DBFileSyncHandler: IDatabaseHandlerContructor = class DBFileSyncHandler implements IDatabaseHandler {
 

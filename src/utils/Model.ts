@@ -1,16 +1,15 @@
-import { type } from "os";
 import db from "./db";
 
 export function createModel(databaseName: string, schema: Schema | Schemas): IModel {
-    return class {
+    return class StaticModel {
 
-        private data: object = {};
+        private data: dataObject = {};
         private static model: Model = new Model(databaseName, schema)
 
         dbName = databaseName;
         schema = schema;
 
-        constructor(data?: object) {
+        constructor(data?: dataObject) {
             if (data) this.data = data;
 
             return new Proxy(this, {
@@ -27,15 +26,26 @@ export function createModel(databaseName: string, schema: Schema | Schemas): IMo
             })
         }
 
-        save(): Promise<IModelContruct> {
-            return Promise.resolve(this)
+        async save(): Promise<IModelContruct> {
+            const data: dataObject = this.getData();
+
+            if (this.data.id == null) {
+                const allModels = await StaticModel.model.find();
+
+                await StaticModel.model.create({ id: allModels.length, ...data });
+            } else {
+                await StaticModel.model.delete({ id: this.data.id });
+                await StaticModel.model.create({ ...data })
+            }
+
+            return this
         }
 
-        getData(): object {
+        getData(): dataObject {
             return { ...this.data };
         }
 
-        setData(data: object): IModelContruct {
+        setData(data: dataObject): IModelContruct {
             this.data = { ...data };
             return this;
         }
@@ -68,7 +78,7 @@ class Model {
         this.schema = schema;
     }
 
-    async find(params?: params): Promise<any> {
+    async find(params?: params): Promise<Array<object>> {
 
         try {
             const data = await db.read();
@@ -76,21 +86,10 @@ class Model {
             if (params == null) {
                 return data[this.dbName];
             } else {
-                data[this.dbName]?.filter(el => {
-                    const entries = Object.entries(params);
+                const entries = Object.entries(params);
+                if (entries.length === 0) return data[this.dbName];
 
-                    if (entries.length > 0) {
-                        let result = true;
-
-                        entries.forEach(([k, v]) => {
-                            result = el[k] != null && el[k] == v ? false : true;
-                        })
-
-                        return result
-                    } else {
-                        return true;
-                    }
-                })
+                return data[this.dbName]?.filter(el => entries.some(([k, v]) => el[k] != null && el[k] == v))
             }
 
         } catch (err) {
@@ -108,22 +107,32 @@ class Model {
     }
 
     async update(data: object): Promise<undefined> {
+        this.validate(data);
+
         return Promise.resolve(undefined)
     }
 
     async create(data: object): Promise<object> {
         try {
+            this.validate(data);
             await db.append(this.dbName, data);
             return data;
         } catch (err) {
             throw new Error(err);
         }
     }
+
+    private validate(data: object): boolean {
+        for (const item in this.schema) {
+            console.log(item)
+        }
+        return true
+    }
 }
 
 export interface IModel {
-    new(data?: object): IModelContruct
-    find(param?: params): Promise<any>
+    new(data?: dataObject): IModelContruct
+    find(param?: params): Promise<Array<object>>
     delete(param: params): Promise<void>
     update(data: object): Promise<undefined>
     create(data: object): Promise<object>
@@ -132,8 +141,8 @@ export interface IModel {
 
 export interface IModelContruct {
     save(): Promise<IModelContruct>
-    getData(): object
-    setData(data: object): IModelContruct
+    getData(): dataObject
+    setData(data: dataObject): IModelContruct
     [key: string]: any
 }
 
@@ -151,6 +160,11 @@ export enum Types {
     String,
     Number,
     Array
+}
+
+export type dataObject = {
+    id?: string | number | undefined
+    [key: string]: string | number | Array<string | number> | undefined
 }
 
 export type params = {

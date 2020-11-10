@@ -1,10 +1,29 @@
+import { DBStruct } from './../src/interfaces/IDatabaseHandler';
 import { dbPath } from "../src/config/config";
 import chai, { expect } from "chai";
 import db from "../src/utils/db"
 import fs from "fs/promises";
+import { abort } from 'process';
 
 
 describe("Database Reader", () => {
+
+    let baseData: any;
+    before(async () => {
+        try {
+            baseData = await fs.readFile(dbPath, { encoding: 'utf-8' })
+        } catch (e) {
+            console.error(e)
+        }
+    })
+
+    after(async () => {
+        try {
+            await fs.writeFile(dbPath, baseData);
+        } catch (e) {
+            console.error(e)
+        }
+    })
 
     describe("read()", () => {
         let fileData: Object;
@@ -40,5 +59,31 @@ describe("Database Reader", () => {
             expect(dbHandlerData).to.be.deep.equal(fileData);
         })
 
+    })
+
+    describe("delete", () => {
+        let data: DBStruct;
+
+        before(async () => {
+            await db.delete("movies", { id: 146 })
+            data = await db.read();
+        })
+
+        it("is removing from file", () => {
+            expect(data.movies[data.movies.length - 1]).is.undefined;
+        })
+    })
+
+    describe("append", () => {
+        let data: DBStruct;
+
+        before(async () => {
+            await db.append('movies', { id: "test", test: "success" });
+            data = await db.read();
+        })
+
+        it("expect to have new data in file", () => {
+            expect(data.movies[data.movies.length - 1]).contain({ id: "test" }, 'incorrect data')
+        })
     })
 })

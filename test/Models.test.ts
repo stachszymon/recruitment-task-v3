@@ -10,6 +10,24 @@ async function getFileData() {
 }
 
 describe("Models", () => {
+
+  let baseData: any;
+  before(async () => {
+    try {
+      baseData = await fs.readFile(dbPath, { encoding: 'utf-8' })
+    } catch (e) {
+      console.error(e)
+    }
+  })
+
+  after(async () => {
+    try {
+      await fs.writeFile(dbPath, baseData);
+    } catch (e) {
+      console.error(e)
+    }
+  })
+
   describe('Movie', () => {
 
     describe("new", () => {
@@ -27,8 +45,7 @@ describe("Models", () => {
       })
 
       it("saving incorrect data", () => {
-        newMovie.save();
-        console.log(newMovie);
+        expect(newMovie.save).to.be.a('function')
         expect(newMovie.save()).to.throw(Error)
       })
 
@@ -48,8 +65,6 @@ describe("Models", () => {
         const savedModel = await newMovie.save(),
           fileData = await getFileData();
 
-        console.log(savedModel);
-
         expect(fileData).to.include(savedModel.getData(), "Don't have required data from file")
       })
     })
@@ -62,7 +77,7 @@ describe("Models", () => {
 
       it("not null", () => expect(data).to.not.be.undefined)
       it("is array or object", () => assert(Array.isArray(data) || assert.isObject(data), "is not array neither object"))
-      it("has some data from file", () => expect(data).to.include({
+      it("has some data from file", () => expect(data).to.deep.include({
         "id": 6,
         "title": "Ratatouille",
         "year": "2007",
@@ -83,7 +98,7 @@ describe("Models", () => {
         data = await Movie.find({ id: 6 })
       })
 
-      it("has some data from file with id: 6", () => expect(data).to.include({
+      it("has some data from file with id: 6", () => expect(data).to.deep.include({
         "id": 6,
         "title": "Ratatouille",
         "year": "2007",
@@ -96,19 +111,20 @@ describe("Models", () => {
       }, "Don't have required data from file"))
 
       it("can get some params from model", () => {
-        expect(data.year).to.equal("2007", "Error in value");
+        expect(data[0].year).to.equal("2007", "Error in value");
       })
     })
 
     it("delete", async () => {
       const param = { id: 6 };
+      let result: any = [];
 
       before(async () => {
-        await Movie.delete({ id: 7 });
+        await Movie.delete(param);
+        result = await Movie.find(param);
       })
-      const result = await Movie.find({ id: 7 });
-      expect(result).to.be.undefined;
 
+      expect(result.length).to.be.equal(0, "should have no result");
     })
 
     it("update", async () => {
