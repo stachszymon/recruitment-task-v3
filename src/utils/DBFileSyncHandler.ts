@@ -1,6 +1,7 @@
 import { dbPath } from './../config/config';
 import { IDatabaseHandler, IDatabaseHandlerContructor, DBStruct } from "../interfaces/IDatabaseHandler";
 import fs from "fs/promises"
+import { ENETDOWN } from 'constants';
 
 const DBFileSyncHandler: IDatabaseHandlerContructor = class DBFileSyncHandler implements IDatabaseHandler {
 
@@ -39,22 +40,16 @@ const DBFileSyncHandler: IDatabaseHandlerContructor = class DBFileSyncHandler im
 
     public async delete(modelName: string, param: object): Promise<void> {
         const data = await this.getData(),
-            model = data[modelName];
+            model = data[modelName],
+            entries = Object.entries(param)
 
-        model.filter(el => {
-            const entries = Object.entries(param)
-            if (entries.length > 0) {
-                let result = true;
+        if (entries.length === 0) return;
 
-                entries.forEach(([k, v]) => {
-                    result = el[k] != null && el[k] == v ? false : true;
-                })
+        const modelIndex = model.findIndex(el => entries.some(([k, v]) => el[k] != null && el[k] == v));
 
-                return result
-            } else {
-                return true;
-            }
-        });
+        if (modelIndex) {
+            delete model[modelIndex];
+        }
 
         await this.write(data);
     }
