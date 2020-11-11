@@ -1,4 +1,5 @@
-import { Schema, Types, createModel } from "../utils/Model";
+import { Types, Schema } from './../interfaces/IModel';
+import { createModel } from "../utils/Model";
 
 const schema: Schema = {
     type: Types.String,

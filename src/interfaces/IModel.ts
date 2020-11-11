@@ -16,7 +16,7 @@ export interface IModelContruct {
 
 export type dataObject = {
     id?: string | number | undefined
-    [key: string]: string | number | Array<string | number> | undefined
+    [key: string]: dataObjectValue
 }
 
 export type params = {
@@ -26,7 +26,7 @@ export type params = {
 export type Schema = {
     type: Types
     required?: boolean
-    validation?: Function
+    validation?: (value: dataObjectValue) => (string)[] | undefined
 }
 
 export type Schemas = {
@@ -34,7 +34,9 @@ export type Schemas = {
 }
 
 export enum Types {
-    String,
-    Number,
-    Array
+    String = "string",
+    Number = "number",
+    Array = "array"
 }
+
+export type dataObjectValue = string | number | Array<string | number> | undefined

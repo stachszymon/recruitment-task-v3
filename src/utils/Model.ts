@@ -43,11 +43,11 @@ export function createModel(databaseName: string, schema: Schema | Schemas): IMo
         }
 
         getData(): dataObject {
-            return { ...this.data };
+            return this.data;
         }
 
         setData(data: dataObject): IModelContruct {
-            this.data = { ...data };
+            this.data = data;
             return this;
         }
 
@@ -59,11 +59,11 @@ export function createModel(databaseName: string, schema: Schema | Schemas): IMo
             return this.model.delete(param)
         }
 
-        static async update(data: object) {
+        static async update(data: dataObject) {
             return this.model.update(data);
         }
 
-        static async create(data: object) {
+        static async create(data: dataObject) {
             return this.model.create(data);
         }
     }
@@ -80,53 +80,56 @@ class Model {
     }
 
     async find(params?: params): Promise<Array<object>> {
+        const data = await db.read();
 
-        try {
-            const data = await db.read();
+        if (params == null) {
+            return data[this.dbName];
+        } else {
+            const entries = Object.entries(params);
+            if (entries.length === 0) return data[this.dbName];
 
-            if (params == null) {
-                return data[this.dbName];
-            } else {
-                const entries = Object.entries(params);
-                if (entries.length === 0) return data[this.dbName];
-
-                return data[this.dbName]?.filter(el => entries.some(([k, v]) => el[k] != null && el[k] == v))
-            }
-
-        } catch (err) {
-            throw new Error(err);
+            return data[this.dbName]?.filter(el => entries.some(([k, v]) => el[k] != null && el[k] == v))
         }
 
     }
 
     async delete(param: params): Promise<void> {
-        try {
-            return db.delete(this.dbName, param)
-        } catch (err) {
-            throw new Error(err);
-        }
+        return db.delete(this.dbName, param)
     }
 
-    async update(data: object): Promise<undefined> {
+    async update(data: dataObject): Promise<undefined> {
         this.validate(data);
 
         return Promise.resolve(undefined)
     }
 
-    async create(data: object): Promise<object> {
-        try {
-            this.validate(data);
-            await db.append(this.dbName, data);
-            return data;
-        } catch (err) {
-            throw new Error(err);
-        }
+    async create(data: dataObject): Promise<object> {
+        this.validate(data);
+        await db.append(this.dbName, data);
+        return data;
     }
 
-    private validate(data: object): boolean {
-        for (const item in this.schema) {
-            console.log(item)
-        }
-        return true
+    private validate(data: dataObject): { data: dataObject, errors: (string | undefined)[], valid: boolean } {
+        return Object.entries(this.schema).reduce((returnValue, entry: [string, Schema]) => {
+            const
+                [key, props] = entry,
+                item: string | number | (string | number)[] | undefined = data[key];
+
+            if (props.required === true && item == null) {
+                data[key] = undefined;
+                returnValue.errors.push(`${key} is required`);
+            } else if (item != null && props.validation != null) {
+                const v = props.validation(item);
+                if (v != null) returnValue.errors.push(...v);
+            }
+
+            returnValue.valid = returnValue.errors.length === 0;
+
+            return returnValue;
+        }, {
+            data: {} as dataObject,
+            errors: [] as (string | undefined)[],
+            valid: false as boolean
+        })
     }
 }

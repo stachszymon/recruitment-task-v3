@@ -1,10 +1,11 @@
-import { Schemas, Types, createModel } from "../utils/Model";
+import { Schemas, Types } from './../interfaces/IModel';
+import { createModel } from "../utils/Model";
 
 const schema: Schemas = {
     title: {
         type: Types.String,
         required: true,
-        validation: () => true,
+        validation: value => undefined,
     },
     year: {
         type: Types.Number,
