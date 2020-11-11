@@ -3,7 +3,6 @@ import Movie from "../src/models/Movie";
 import Genere from "../src/models/Genere";
 import { dbPath } from "../src/config/config";
 import fs from "fs/promises"
-import { createModel } from "../src/utils/Model";
 
 async function getFileData() {
   return JSON.parse(await fs.readFile(dbPath, { encoding: "utf-8" }))

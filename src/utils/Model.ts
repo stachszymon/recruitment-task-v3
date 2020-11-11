@@ -1,4 +1,4 @@
-import { IModel, IModelContruct, dataObject, params } from '../interfaces/IModel';
+import { IModel, IModelContruct, dataObject, params, Schema, Schemas } from '../interfaces/IModel';
 import db from "./db";
 
 export function createModel(databaseName: string, schema: Schema | Schemas): IModel {
@@ -129,20 +129,4 @@ class Model {
         }
         return true
     }
-}
-
-export type Schema = {
-    type: Types
-    required?: boolean
-    validation?: Function
-}
-
-export type Schemas = {
-    [key: string]: Schema
-}
-
-export enum Types {
-    String,
-    Number,
-    Array
 }

@@ -3,8 +3,6 @@ import { dbPath } from "../src/config/config";
 import chai, { expect } from "chai";
 import db from "../src/utils/db"
 import fs from "fs/promises";
-import { abort } from 'process';
-
 
 describe("Database Reader", () => {
 

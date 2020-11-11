@@ -22,3 +22,19 @@ export type dataObject = {
 export type params = {
     [key: string]: string | number
 }
+
+export type Schema = {
+    type: Types
+    required?: boolean
+    validation?: Function
+}
+
+export type Schemas = {
+    [key: string]: Schema
+}
+
+export enum Types {
+    String,
+    Number,
+    Array
+}

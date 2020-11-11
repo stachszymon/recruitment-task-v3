@@ -3,7 +3,7 @@ import { RouteDefinition } from "./utils/ControllerDecorators";
 
 export default class App {
     private express: Application;
-    private port: number;
+    private readonly port: number;
 
     constructor(port: number = 3000) {
         this.express = express();
