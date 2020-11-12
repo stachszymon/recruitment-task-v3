@@ -12,11 +12,11 @@ const schema: Schemas = {
         validation: value => undefined,
     },
     year: {
-        type: Types.Number,
+        type: Types.String,
         required: true,
     },
     runtime: {
-        type: Types.Number,
+        type: Types.String,
         required: true,
     },
     director: {
@@ -32,6 +32,9 @@ const schema: Schemas = {
     posterUrl: {
         type: Types.String
     },
+    genres: {
+        type: Types.Array
+    }
 }
 
 /*

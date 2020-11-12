@@ -49,7 +49,7 @@ const DBFileSyncHandler: IDatabaseHandlerContructor = class DBFileSyncHandler im
             const modelIndex = model.findIndex((el: { [x: string]: any; }) => entries.some(([k, v]) => el[k] != null && el[k] == v));
 
             if (modelIndex) {
-                delete model[modelIndex];
+                model.splice(modelIndex, 1);
             }
 
             await this.write(data);
@@ -60,7 +60,7 @@ const DBFileSyncHandler: IDatabaseHandlerContructor = class DBFileSyncHandler im
                 modelIndex = model.indexOf(param);
 
             if (modelIndex) {
-                delete model[modelIndex];
+                model.splice(modelIndex, 1);
             }
 
             await this.write(data);

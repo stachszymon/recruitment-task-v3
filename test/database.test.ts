@@ -1,4 +1,4 @@
-import { DBStruct } from './../src/interfaces/IDatabaseHandler';
+import { DBStruct, SchemasStruct } from './../src/interfaces/IDatabaseHandler';
 import { dbPath } from "../src/config/config";
 import chai, { expect } from "chai";
 import db from "../src/utils/db"
@@ -63,12 +63,14 @@ describe("Database Reader", () => {
         let data: DBStruct;
 
         before(async () => {
-            await db.delete("movies", { id: 146 })
+            await db.delete("movies", { id: 12 })
             data = await db.read();
         })
 
         it("is removing from file", () => {
-            expect(data.movies[data.movies.length - 1]).is.undefined;
+            const mm: SchemasStruct[] = data.movies as SchemasStruct[]
+
+            expect(mm.find((el) => el.id == 12)).is.undefined;
         })
     })
 

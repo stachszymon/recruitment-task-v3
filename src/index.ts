@@ -1,6 +1,5 @@
 import App from "./App";
 import MovieController from "./controllers/MovieController";
-import db from "./utils/db";
 
 const app = new App(3000);
 

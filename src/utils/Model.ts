@@ -140,11 +140,15 @@ export class SingleModel {
 
         if (props.required === true && data == null) {
             validatedData.errors.push(`"value" is required`);
-        } else if (data != null && props.validation != null) {
-            const v = props.validation(data);
-            if (v != null) validatedData.errors.push(...v);
-            validatedData.data = data;
         } else if (data != null) {
+            if (props.validation != null) {
+                const v = props.validation(data);
+                if (v != null) validatedData.errors.push(...v);
+            }
+
+            if ((props.type === 'array' && data?.constructor.name !== 'Array') || (props.type !== 'array' && typeof data !== props.type)) {
+                validatedData.errors.push(`${'value'} has invalid type expected to be ${props.type}`)
+            }
             validatedData.data = data;
         }
 
@@ -187,10 +191,11 @@ export class Model {
 
         if (validData.valid === false) throw new ValidationError(validData.errors);
 
-        await Promise.all([
-            this.delete(oldParams),
-            this.create(validData.data)
-        ])
+        if (data.id != oldParams.id) {
+            await this.delete({ id: oldParams.id })
+        }
+
+        await this.create(validData.data)
 
         return validData.data;
     }
@@ -211,7 +216,9 @@ export class Model {
             if (idWasNull === false) {
                 await db.delete(this.dbName, { id: data.id })
             }
+
             await db.append(this.dbName, validatedData.data);
+
             return validatedData.data;
         }
     }
@@ -225,16 +232,19 @@ export class Model {
             if (props.required === true && item == null) {
                 data[key] = undefined;
                 returnValue.errors.push(`${key} is required`);
-            } else if (item != null && props.validation != null) {
-                const v = props.validation(item);
-                if (v != null) returnValue.errors.push(...v);
-                returnValue.data[key] = item;
             } else if (item != null) {
+                if (props.validation != null) {
+                    const v = props.validation(item);
+                    if (v != null) returnValue.errors.push(...v);
+                }
+
+                if ((props.type === 'array' && item.constructor.name !== 'Array') || (props.type !== 'array' && typeof item !== props.type)) {
+                    returnValue.errors.push(`${key} has invalid type expected to be ${props.type}`)
+                }
                 returnValue.data[key] = item;
             }
 
             returnValue.valid = returnValue.errors.length === 0;
-
             return returnValue;
         }, {
             data: {} as dataObjectRaw,

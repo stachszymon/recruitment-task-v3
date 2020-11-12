@@ -3,15 +3,15 @@ import Movie from "../src/models/Movie";
 import Genere from "../src/models/Genere";
 import { dbPath } from "../src/config/config";
 import fs from "fs/promises"
-import ValidationError from "../src/utils/ValidationError";
 
 async function getFileData() {
   return JSON.parse(await fs.readFile(dbPath, { encoding: "utf-8" }))
 }
 
+let baseData: any;
+
 describe("Models", () => {
 
-  let baseData: any;
   before(async () => {
     try {
       baseData = await fs.readFile(dbPath, { encoding: 'utf-8' })
@@ -30,7 +30,7 @@ describe("Models", () => {
 
   describe('Movie', () => {
 
-    describe("new", () => {
+    describe("instance new", () => {
       const newMovie = new Movie({});
 
       const stringToPut = "Test Value";
@@ -81,7 +81,7 @@ describe("Models", () => {
       })
     })
 
-    describe('@find', () => {
+    describe('static find', () => {
       let data: any;
       before(async () => {
         data = await Movie.find();
@@ -103,47 +103,81 @@ describe("Models", () => {
 
     })
 
-    describe("@find by id", () => {
+    describe("static find by id", () => {
       let data: any;
 
       before(async () => {
-        data = await Movie.find({ id: 6 })
+        data = await Movie.find({ id: 8 })
       })
 
-      it("has some data from file with id: 6", () => expect(data).to.deep.include({
-        "id": 6,
-        "title": "Ratatouille",
-        "year": "2007",
-        "runtime": "111",
-        "genres": ["Animation", "Comedy", "Family"],
-        "director": "Brad Bird, Jan Pinkava",
-        "actors": "Patton Oswalt, Ian Holm, Lou Romano, Brian Dennehy",
-        "plot": "A rat who can cook makes an unusual alliance with a young kitchen worker at a famous restaurant.",
-        "posterUrl": "https://images-na.ssl-images-amazon.com/images/M/MV5BMTMzODU0NTkxMF5BMl5BanBnXkFtZTcwMjQ4MzMzMw@@._V1_SX300.jpg"
+      it("has some data from file with id: 8", () => expect(data).to.deep.include({
+        "id": 8,
+        "title": "Memento",
+        "year": "2000",
+        "runtime": "113",
+        "genres": ["Mystery", "Thriller"],
+        "director": "Christopher Nolan",
+        "actors": "Guy Pearce, Carrie-Anne Moss, Joe Pantoliano, Mark Boone Junior",
+        "plot": "A man juggles searching for his wife's murderer and keeping his short-term memory loss from being an obstacle.",
+        "posterUrl": "https://images-na.ssl-images-amazon.com/images/M/MV5BNThiYjM3MzktMDg3Yy00ZWQ3LTk3YWEtN2M0YmNmNWEwYTE3XkEyXkFqcGdeQXVyMTQxNzMzNDI@._V1_SX300.jpg"
       }, "Don't have required data from file"))
 
       it("can get some params from model", () => {
-        expect(data[0].year).to.equal("2007", "Error in value");
+        expect(data[0].year).to.equal("2000", "Error in value");
       })
     })
 
-    it("delete", async () => {
-      const param = { id: 6 };
-      let result: any = [];
+    describe('static methods', () => {
 
-      before(async () => {
-        await Movie.delete(param);
-        result = await Movie.find(param);
+      it("delete", async () => {
+        const param = { id: 6 };
+        let result: any = [];
+
+        before(async () => {
+          await Movie.delete(param);
+          result = await Movie.find(param);
+        })
+
+        expect(result.length).to.be.equal(0, "should have no result");
       })
 
-      expect(result.length).to.be.equal(0, "should have no result");
-    })
+      it("update", async () => {
+        const newModelData = {
+          title: "new movie",
+          year: "1995",
+          runtime: "123 45",
+          director: "Jan Dzban 65",
+          actors: "John update sange",
+          plot: "Plot plot plot",
+          id: 6,
+        }
 
-    it("update", async () => {
+        const result = await Movie.update(newModelData, { id: 6 })
+        const file = await getFileData();
+        const finded = file.movies.find((el: { id: number; }) => el.id === 6)
 
-    })
+        expect(result, "result can't be null").to.not.be.undefined;
+        expect(file.movies).to.deep.contain(result, "file data don't have new record");
+        expect(finded).to.be.deep.equal(result, "updated file isn't equal");
 
-    it("create", async () => {
+      })
+
+      it("create", async () => {
+        const newModelData = {
+          title: "new movie",
+          year: "1995",
+          runtime: "123 45",
+          director: "Jan Dzban 2",
+          actors: "John Holland 2",
+          plot: "Plot plot plot",
+        }
+
+        const result = await Movie.create(newModelData)
+        const file = await getFileData();
+
+        expect(result, "result can't be null").to.not.be.undefined;
+        expect(file.movies).to.deep.contain(result, "file data don't have new record");
+      })
 
     })
 
