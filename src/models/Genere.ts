@@ -6,6 +6,6 @@ const schema: Schema = {
     required: true
 }
 
-const Genere = createModel('genres', schema)
+const Genere = createModel('genres', schema, true)
 
 export default Genere;

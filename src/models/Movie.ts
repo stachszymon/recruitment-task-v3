@@ -2,6 +2,10 @@ import { Schemas, Types } from './../interfaces/IModel';
 import { createModel } from "../utils/Model";
 
 const schema: Schemas = {
+    id: {
+        type: Types.Number,
+        required: true,
+    },
     title: {
         type: Types.String,
         required: true,
@@ -27,7 +31,7 @@ const schema: Schemas = {
     },
     posterUrl: {
         type: Types.String
-    }
+    },
 }
 
 /*
@@ -41,6 +45,6 @@ const schema: Schemas = {
 - posterUrl (optional, string)
  */
 
-const Movie = createModel('movies', schema);
+const Movie = createModel('movies', schema, false);
 
 export default Movie;

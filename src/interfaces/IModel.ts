@@ -1,9 +1,9 @@
 export interface IModel {
     new(data?: dataObject): IModelContruct
-    find(param?: params): Promise<Array<object>>
+    find(param?: params): Promise<Array<object | string | number>>
     delete(param: params): Promise<void>
-    update(data: object): Promise<undefined>
-    create(data: object): Promise<object>
+    update(data: dataObject, params: params): Promise<void>
+    create(data: dataObject): Promise<object | string | number>
     [key: string]: any
 }
 
@@ -14,12 +14,16 @@ export interface IModelContruct {
     [key: string]: any
 }
 
-export type dataObject = {
+export type dataObjectRaw = {
     id?: string | number | undefined
     [key: string]: dataObjectValue
 }
 
-export type params = {
+export type dataObject = dataObjectRaw | string | number
+
+export type params = paramObject | string | number
+
+export type paramObject = {
     [key: string]: string | number
 }
 

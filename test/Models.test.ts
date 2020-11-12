@@ -3,6 +3,7 @@ import Movie from "../src/models/Movie";
 import Genere from "../src/models/Genere";
 import { dbPath } from "../src/config/config";
 import fs from "fs/promises"
+import ValidationError from "../src/utils/ValidationError";
 
 async function getFileData() {
   return JSON.parse(await fs.readFile(dbPath, { encoding: "utf-8" }))
@@ -43,9 +44,21 @@ describe("Models", () => {
         expect(newMovie.test).to.be.equal(stringToPut);
       })
 
-      it("saving incorrect data", () => {
+      it('save method is function', () => {
         expect(newMovie.save).to.be.a('function')
-        expect(newMovie.save()).to.throw(Error)
+      })
+
+      it("saving incorrect data", async () => {
+        //expect(newMovie.save).to.throw() Don't work :(
+        let isError = false;
+
+        try {
+          await newMovie.save();
+        } catch (e) {
+          isError = true;
+        }
+
+        expect(isError).to.be.equal(true);
       })
 
       it("saving correct data", async () => {
@@ -64,7 +77,7 @@ describe("Models", () => {
         const savedModel = await newMovie.save(),
           fileData = await getFileData();
 
-        expect(fileData).to.include(savedModel.getData(), "Don't have required data from file")
+        expect(fileData.movies[fileData.movies.length - 1]).to.include(savedModel.getData(), "Don't have required data from file")
       })
     })
 

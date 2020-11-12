@@ -1,3 +1,4 @@
+import { SchemasStruct, SchemaStruct } from './../interfaces/IDatabaseHandler';
 import { dbPath } from './../config/config';
 import { IDatabaseHandler, IDatabaseHandlerContructor, DBStruct } from "../interfaces/IDatabaseHandler";
 import fs from "fs/promises"
@@ -12,9 +13,6 @@ const DBFileSyncHandler: IDatabaseHandlerContructor = class DBFileSyncHandler im
         this.data = undefined;
     }
 
-    /**
-     * Read file and cache file content
-     */
     public async read(): Promise<DBStruct> {
         if (this.data != null) {
             return this.data;
@@ -28,7 +26,7 @@ const DBFileSyncHandler: IDatabaseHandlerContructor = class DBFileSyncHandler im
         }
     }
 
-    public async append(modelName: string, data: object): Promise<void> {
+    public async append(modelName: string, data: object | string | number): Promise<void> {
         const memo = await this.getData(),
             model = memo[modelName];
 
@@ -37,20 +35,37 @@ const DBFileSyncHandler: IDatabaseHandlerContructor = class DBFileSyncHandler im
         await this.write(memo);
     }
 
-    public async delete(modelName: string, param: object): Promise<void> {
-        const data = await this.getData(),
-            model = data[modelName],
-            entries = Object.entries(param)
+    public async delete(modelName: string, param: object | string | number): Promise<void> {
 
-        if (entries.length === 0) return;
+        const data = await this.getData();
 
-        const modelIndex = model.findIndex(el => entries.some(([k, v]) => el[k] != null && el[k] == v));
+        if (typeof param === 'object') {
 
-        if (modelIndex) {
-            delete model[modelIndex];
+            const model = data[modelName] as SchemasStruct,
+                entries = Object.entries(param)
+
+            if (entries.length === 0) return;
+
+            const modelIndex = model.findIndex((el: { [x: string]: any; }) => entries.some(([k, v]) => el[k] != null && el[k] == v));
+
+            if (modelIndex) {
+                delete model[modelIndex];
+            }
+
+            await this.write(data);
+
+        } else {
+
+            const model = data[modelName] as (string | number)[],
+                modelIndex = model.indexOf(param);
+
+            if (modelIndex) {
+                delete model[modelIndex];
+            }
+
+            await this.write(data);
+
         }
-
-        await this.write(data);
     }
 
     private write(data: DBStruct): Promise<void> {
