@@ -54,7 +54,12 @@ const DBFileSyncHandler: IDatabaseHandlerContructor = class DBFileSyncHandler im
     }
 
     private write(data: DBStruct): Promise<void> {
-        return fs.writeFile(dbPath, JSON.stringify(data), { encoding: "utf-8" })
+        this.data = data;
+        return this.writeToFileFromCache();
+    }
+
+    private writeToFileFromCache(): Promise<void> {
+        return fs.writeFile(dbPath, JSON.stringify(this.data), { encoding: "utf-8" })
     }
 
     private async getData() {
