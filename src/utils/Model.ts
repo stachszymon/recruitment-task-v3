@@ -97,11 +97,18 @@ export class SingleModel {
         return db.delete(this.dbName, params)
     }
 
-    async update(newData: string | number, oldParams: string | number): Promise<void> {
-        this.validate(newData);
-        //TODO UPDATE xD XD XD
+    async update(newData: string | number, oldParams: string | number): Promise<string | number> {
 
-        return Promise.resolve(undefined)
+        const validData = this.validate(newData)
+
+        if (validData.valid === false) throw new ValidationError(validData.errors);
+
+        await Promise.all([
+            this.delete(oldParams),
+            this.create(validData.data)
+        ])
+
+        return validData.data;
     }
 
     async create(data: string | number): Promise<string | number> {
@@ -174,10 +181,18 @@ export class Model {
         return db.delete(this.dbName, param)
     }
 
-    async update(data: dataObjectRaw, oldParams: paramObject): Promise<undefined> {
-        this.validate(data);
+    async update(data: dataObjectRaw, oldParams: paramObject): Promise<object> {
 
-        return Promise.resolve(undefined)
+        const validData = this.validate(data);
+
+        if (validData.valid === false) throw new ValidationError(validData.errors);
+
+        await Promise.all([
+            this.delete(oldParams),
+            this.create(validData.data)
+        ])
+
+        return validData.data;
     }
 
     async create(data: dataObjectRaw): Promise<object> {

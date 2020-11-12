@@ -2,7 +2,7 @@ export interface IModel {
     new(data?: dataObject): IModelContruct
     find(param?: params): Promise<Array<object | string | number>>
     delete(param: params): Promise<void>
-    update(data: dataObject, params: params): Promise<void>
+    update(data: dataObject, params: params): Promise<object | string | number>
     create(data: dataObject): Promise<object | string | number>
     [key: string]: any
 }
