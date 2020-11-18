@@ -1,5 +1,7 @@
 import { Schemas, Types } from './../interfaces/IModel';
 import { createModel } from "../utils/Model";
+import { validateNumberType, validateStringMax } from "../utils/validationFunctions"
+import Genere from "./Genere";
 
 const schema: Schemas = {
     id: {
@@ -9,19 +11,23 @@ const schema: Schemas = {
     title: {
         type: Types.String,
         required: true,
-        validation: value => undefined,
+        validation: validateStringMax("title"),
     },
     year: {
         type: Types.String,
         required: true,
+        validation: validateNumberType("year"),
+
     },
     runtime: {
         type: Types.String,
         required: true,
+        validation: validateNumberType("runtime"),
     },
     director: {
         type: Types.String,
         required: true,
+        validation: validateStringMax("director"),
     },
     actors: {
         type: Types.String,
@@ -33,7 +39,12 @@ const schema: Schemas = {
         type: Types.String
     },
     genres: {
-        type: Types.Array
+        type: Types.Array,
+        validation: async value => {
+            const g = await Genere.find(value);
+            if (g[0] == null) return [`Can't find "Genere"`]
+            return []
+        }
     }
 }
 

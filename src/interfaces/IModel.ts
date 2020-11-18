@@ -30,7 +30,7 @@ export type paramObject = {
 export type Schema = {
     type: Types
     required?: boolean
-    validation?: (value: dataObjectValue) => (string)[] | undefined
+    validation?: (value: any) => Promise<(string)[] | undefined> | (string)[] | undefined
 }
 
 export type Schemas = {

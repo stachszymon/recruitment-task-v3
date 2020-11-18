@@ -99,7 +99,7 @@ export class SingleModel {
 
     async update(newData: string | number, oldParams: string | number): Promise<string | number> {
 
-        const validData = this.validate(newData)
+        const validData = await this.validate(newData)
 
         if (validData.valid === false) throw new ValidationError(validData.errors);
 
@@ -119,7 +119,7 @@ export class SingleModel {
             return data;
         }
 
-        const validatedData = this.validate(data);
+        const validatedData = await this.validate(data);
 
         if (validatedData.valid === false) {
             throw new ValidationError(validatedData.errors);
@@ -129,7 +129,7 @@ export class SingleModel {
         }
     }
 
-    private validate(data: string | number): validatedData<string | number> {
+    private async validate(data: string | number): Promise<validatedData<string | number>> {
         const validatedData: validatedData<string | number> = {
             data,
             errors: [],
@@ -141,13 +141,12 @@ export class SingleModel {
         if (props.required === true && data == null) {
             validatedData.errors.push(`"value" is required`);
         } else if (data != null) {
-            if (props.validation != null) {
-                const v = props.validation(data);
-                if (v != null) validatedData.errors.push(...v);
-            }
 
             if ((props.type === 'array' && data?.constructor.name !== 'Array') || (props.type !== 'array' && typeof data !== props.type)) {
                 validatedData.errors.push(`${'value'} has invalid type expected to be ${props.type}`)
+            } else if (props.validation != null) {
+                const v = await props.validation(data);
+                if (v != null) validatedData.errors.push(...v);
             }
             validatedData.data = data;
         }
@@ -187,7 +186,7 @@ export class Model {
 
     async update(data: dataObjectRaw, oldParams: paramObject): Promise<object> {
 
-        const validData = this.validate(data);
+        const validData = await this.validate(data);
 
         if (validData.valid === false) throw new ValidationError(validData.errors);
 
@@ -208,7 +207,7 @@ export class Model {
             data.id = lastID;
         }
 
-        const validatedData = this.validate(data);
+        const validatedData = await this.validate(data);
 
         if (validatedData.valid === false) {
             throw new ValidationError(validatedData.errors);
@@ -222,9 +221,15 @@ export class Model {
             return validatedData.data;
         }
     }
+    // : Promise< validatedData<dataObjectRaw> >
+    private async validate(data: dataObjectRaw): Promise<validatedData<dataObjectRaw>> {
+        const returnValue: validatedData<dataObjectRaw> = {
+            data: {} as dataObjectRaw,
+            errors: [] as (string)[],
+            valid: false as boolean
+        }
 
-    private validate(data: dataObjectRaw): validatedData<dataObjectRaw> {
-        return Object.entries(this.schema).reduce((returnValue, entry: [string, Schema]) => {
+        await Object.entries(this.schema).forEach(async (entry: [string, Schema]) => {
             const
                 [key, props] = entry,
                 item: string | number | (string | number)[] | undefined = data[key];
@@ -233,24 +238,20 @@ export class Model {
                 data[key] = undefined;
                 returnValue.errors.push(`${key} is required`);
             } else if (item != null) {
-                if (props.validation != null) {
-                    const v = props.validation(item);
-                    if (v != null) returnValue.errors.push(...v);
-                }
 
                 if ((props.type === 'array' && item.constructor.name !== 'Array') || (props.type !== 'array' && typeof item !== props.type)) {
                     returnValue.errors.push(`${key} has invalid type expected to be ${props.type}`)
+                } else if (props.validation != null) {
+                    const v = await props.validation(item);
+                    if (v != null) returnValue.errors.push(...v);
                 }
                 returnValue.data[key] = item;
             }
 
             returnValue.valid = returnValue.errors.length === 0;
-            return returnValue;
-        }, {
-            data: {} as dataObjectRaw,
-            errors: [] as (string)[],
-            valid: false as boolean
         })
+
+        return returnValue;
     }
 }
 
