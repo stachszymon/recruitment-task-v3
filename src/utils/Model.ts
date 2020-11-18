@@ -221,7 +221,7 @@ export class Model {
             return validatedData.data;
         }
     }
-    // : Promise< validatedData<dataObjectRaw> >
+
     private async validate(data: dataObjectRaw): Promise<validatedData<dataObjectRaw>> {
         const returnValue: validatedData<dataObjectRaw> = {
             data: {} as dataObjectRaw,
