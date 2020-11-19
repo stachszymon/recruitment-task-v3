@@ -8,7 +8,7 @@ chai.use(chaiHttp);
 
 describe("RestApi", () => {
 
-    describe.only("/POST movie", () => {
+    describe("/POST movie", () => {
 
         it('should create new movie', done => {
             chai.request(app)
@@ -29,15 +29,66 @@ describe("RestApi", () => {
 
     })
 
-    describe("/GET movie", () => {
+    describe.only("/GET movie", () => {
 
-        it("should get list of movies", (done) => {
+        it("no param: should get one random movie", (done) => {
             chai.request(app)
                 .get("/movie")
                 .end((err, res) => {
                     res.should.have.status(200);
+                    res.body.should.be.a('object');
+                    res.body.should.not.be.eql(undefined);
+                    done();
+                })
+        })
+
+        it("duration param: shoudl get on random movie between +/- 10 duration", (done) => {
+            chai.request(app)
+                .get("/movie")
+                .query({
+                    duration: 2010
+                })
+                .end((err, res) => {
+                    res.should.have.status(200);
+                    res.body.should.be.a('object');
+                    res.body.should.not.be.eql(undefined);
+                    expect(Number(res.body.duration)).to.be.below(2020);
+                    expect(Number(res.body.duration)).to.be.above(2000);
+                    done();
+                })
+        })
+
+        it("genere param: should get all movies with genere", (done) => {
+            chai.request(app)
+                .get("/movie")
+                .query({
+                    duration: 2010,
+                    genere: ["Crime", "Drama"]
+                })
+                .end((err, res) => {
+                    res.should.have.status(200);
                     res.body.should.be.a('array');
-                    res.body.should.not.be.eql(0);
+                    res.body.should.not.be.eql(undefined);
+                    expect(res.body.every((x: any) => {
+                        const n = Number(res.body.duration)
+                        return n >= 2000 && n <= 2020
+                    })).to.be.true;
+                    expect(res.body.every((x: any) => x.genres.includes("Crime") || x.genres.includes("Drama"))).to.be.true;
+                    done();
+                })
+        })
+
+        it("all param: all movies with genere betwean duration", (done) => {
+            chai.request(app)
+                .get("/movie")
+                .query({
+                    genere: ["Crime", "Drama"]
+                })
+                .end((err, res) => {
+                    res.should.have.status(200);
+                    res.body.should.be.a('array');
+                    res.body.should.not.be.eql(undefined);
+                    expect(res.body.every((x: any) => x.genres.includes("Crime") || x.genres.includes("Drama"))).to.be.true;
                     done();
                 })
         })
