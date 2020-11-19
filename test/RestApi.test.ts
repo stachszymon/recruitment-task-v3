@@ -8,6 +8,27 @@ chai.use(chaiHttp);
 
 describe("RestApi", () => {
 
+    describe.only("/POST movie", () => {
+
+        it('should create new movie', done => {
+            chai.request(app)
+                .post("/movie")
+                .send({
+                    title: "new movie",
+                    year: "1995",
+                    runtime: "12345",
+                    director: "Jan Dzban 2",
+                    actors: "John Holland 2",
+                    plot: "Plot plot plot",
+                }).end((err, res) => {
+                    res.should.have.status(201);
+                    done();
+                })
+
+        })
+
+    })
+
     describe("/GET movie", () => {
 
         it("should get list of movies", (done) => {

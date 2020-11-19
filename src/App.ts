@@ -1,5 +1,6 @@
 import express, { Application, NextFunction, Response, Request } from "express";
 import { RouteDefinition } from "./utils/ControllerDecorators";
+import bodyParser from 'body-parser';
 
 export default class App {
     private express: Application;
@@ -11,6 +12,8 @@ export default class App {
     }
 
     public run(): App {
+        this.express.use(bodyParser.json())
+
         this.express.listen(this.port, () => {
             console.log(`Express app started on port: ${this.port}`)
         })
@@ -38,6 +41,7 @@ export default class App {
             router.use(prefix, newRoutes)
         })
 
+        this.getExpress().use(bodyParser.json());
         this.getExpress().use(router);
     }
 
