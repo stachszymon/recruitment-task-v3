@@ -1,4 +1,4 @@
-import express, { Application } from "express";
+import express, { Application, NextFunction, Response, Request } from "express";
 import { RouteDefinition } from "./utils/ControllerDecorators";
 
 export default class App {
@@ -32,12 +32,22 @@ export default class App {
             const newRoutes = express.Router();
 
             routes.forEach(route => {
-                newRoutes[route.method](route.path, instance[route.handler]);
+                newRoutes[route.method](route.path, this.methodHandler(instance[route.handler]));
             })
 
             router.use(prefix, newRoutes)
         })
 
         this.getExpress().use(router);
+    }
+
+    private methodHandler(method: Function) {
+        return async (req: Request, res: Response, next: NextFunction) => {
+            try {
+                return await method(req, res, next);
+            } catch (err) {
+                return res.status(500).json({ error: true, message: err.toString() })
+            }
+        }
     }
 }
