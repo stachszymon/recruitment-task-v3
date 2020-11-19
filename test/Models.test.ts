@@ -145,7 +145,7 @@ describe("Models", () => {
         const newModelData = {
           title: "new movie",
           year: "1995",
-          runtime: "123 45",
+          runtime: "12345",
           director: "Jan Dzban 65",
           actors: "John update sange",
           plot: "Plot plot plot",
@@ -166,7 +166,7 @@ describe("Models", () => {
         const newModelData = {
           title: "new movie",
           year: "1995",
-          runtime: "123 45",
+          runtime: "12345",
           director: "Jan Dzban 2",
           actors: "John Holland 2",
           plot: "Plot plot plot",
