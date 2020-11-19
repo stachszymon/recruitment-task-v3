@@ -38,6 +38,7 @@ describe("RestApi", () => {
                     res.should.have.status(200);
                     res.body.should.be.a('object');
                     res.body.should.not.be.eql(undefined);
+
                     done();
                 })
         })
@@ -46,14 +47,14 @@ describe("RestApi", () => {
             chai.request(app)
                 .get("/movie")
                 .query({
-                    duration: 2010
+                    duration: 201
                 })
                 .end((err, res) => {
                     res.should.have.status(200);
                     res.body.should.be.a('object');
                     res.body.should.not.be.eql(undefined);
-                    expect(Number(res.body.duration)).to.be.below(2020);
-                    expect(Number(res.body.duration)).to.be.above(2000);
+                    expect(Number(res.body.runtime)).to.be.below(212).above(190);
+
                     done();
                 })
         })
@@ -62,18 +63,15 @@ describe("RestApi", () => {
             chai.request(app)
                 .get("/movie")
                 .query({
-                    duration: 2010,
-                    genere: ["Crime", "Drama"]
+                    genres: ["Crime", "Drama"]
                 })
                 .end((err, res) => {
                     res.should.have.status(200);
                     res.body.should.be.a('array');
                     res.body.should.not.be.eql(undefined);
-                    expect(res.body.every((x: any) => {
-                        const n = Number(res.body.duration)
-                        return n >= 2000 && n <= 2020
-                    })).to.be.true;
+
                     expect(res.body.every((x: any) => x.genres.includes("Crime") || x.genres.includes("Drama"))).to.be.true;
+
                     done();
                 })
         })
@@ -82,13 +80,19 @@ describe("RestApi", () => {
             chai.request(app)
                 .get("/movie")
                 .query({
-                    genere: ["Crime", "Drama"]
+                    duration: 201,
+                    genres: ["Action", "Biography"]
                 })
                 .end((err, res) => {
                     res.should.have.status(200);
                     res.body.should.be.a('array');
                     res.body.should.not.be.eql(undefined);
+                    expect(res.body.every((x: any) => {
+                        const n = Number(x.runtime)
+                        return n >= 191 && n <= 211
+                    })).to.be.true;
                     expect(res.body.every((x: any) => x.genres.includes("Crime") || x.genres.includes("Drama"))).to.be.true;
+
                     done();
                 })
         })
