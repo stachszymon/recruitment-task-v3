@@ -11,7 +11,7 @@ function checkForRoutesArray(target: Object): void {
     }
 }
 
-export function Get(path: string): MethodDecorator {
+function methodDecorator(method: "get" | "post" | "delete" | "options" | "put", path: string) {
     return function (
         target: Object,
         key: string | symbol,
@@ -22,13 +22,29 @@ export function Get(path: string): MethodDecorator {
         const routes: Array<RouteDefinition> = Reflect.get(target, "routes");
 
         routes.push({
-            method: "get",
+            method: method,
             path,
             handler: key
         })
 
         Reflect.set(target, "routes", routes);
     }
+}
+
+export function Get(path: string): MethodDecorator {
+    return methodDecorator('get', path)
+}
+
+export function Post(path: string): MethodDecorator {
+    return methodDecorator('post', path)
+}
+
+export function Put(path: string): MethodDecorator {
+    return methodDecorator('put', path)
+}
+
+export function Delete(path: string): MethodDecorator {
+    return methodDecorator('delete', path)
 }
 
 export function Controller(path: string): ClassDecorator {

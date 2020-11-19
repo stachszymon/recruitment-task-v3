@@ -9,7 +9,10 @@ export default class MovieController {
     async getAll(req: Request, res: Response, next: NextFunction) {
         const movies = await Movie.find();
 
+        console.log(req.query)
+
         res.status(200).json(movies)
     }
+
 
 }

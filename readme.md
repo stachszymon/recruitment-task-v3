@@ -2,7 +2,8 @@
 
 Hey there!
 
-Not so long ago we decided create a catalogue of our favourite movies (data/db.json) as json. It is hard to update, so we would like to build an API
+Not so long ago we decided create a catalogue of our favourite movies (data/db.json) as json.
+It is hard to update, so we would like to build an API
 for it, however we don't need a database, we still need it as a file.
 
 ### TODOS
