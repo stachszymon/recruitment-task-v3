@@ -1,7 +1,7 @@
 export type RouteDefinition = {
     path: string
     method: "get" | "post" | "delete" | "options" | "put"
-    handler: Function | string | symbol
+    handler: string | symbol
 }
 
 function checkForRoutesArray(target: Object): void {

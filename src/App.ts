@@ -32,9 +32,7 @@ export default class App {
             const newRoutes = express.Router();
 
             routes.forEach(route => {
-                const x = route.handler;
-                console.log(route.method, route.path, x, "instance")
-                // newRoutes[route.method](route.path, x);
+                newRoutes[route.method](route.path, instance[route.handler]);
             })
 
             router.use(prefix, newRoutes)
