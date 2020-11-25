@@ -29,7 +29,7 @@ describe("RestApi", () => {
 
     })
 
-    describe.only("/GET movie", () => {
+    describe("/GET movie", () => {
 
         it("no param: should get one random movie", (done) => {
             chai.request(app)
